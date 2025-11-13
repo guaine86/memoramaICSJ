@@ -6,10 +6,20 @@ let valoresUsados = [];
 let movimientoActual = 0;
 let intentos = 0;
 let paresEncontrados = 0;
+let contador=0;
+let banderaJuego = false;
+let tiempoJuego = 0;
 
+const regresiva = document.querySelector('.regresiva');
+const btnNuevo = document.querySelector('#btnInicio');
 let templateCarta = '<div class="carta"><div class="trasera"></div><div class="frente"></div></div>';
 
 function activar(evento){
+    if(contador===0){
+        reloj();
+        contador++;
+    }
+    
     if(movimientoActual < 2){
         evento.target.classList.add('activa');
     }
@@ -25,6 +35,7 @@ function activar(evento){
                 paresEncontrados++;
                 //console.log(paresEncontrados);
                 if(paresEncontrados === totalCartas/2){
+                    banderaJuego = true;
                     setTimeout(()=>{
                         lanzaSwal("Felicitaciones!!", "Encontraste todas las parejas", "success");
                         //alert('Felicitaciones!!!');
@@ -73,6 +84,24 @@ function lanzaSwal(titulo, texto, icono){
     });
 }
 
+function reloj( tiempo=60 ){
+    let i = tiempo;
+    let cuentaRegresiva =  setInterval(() => {
+        regresiva.innerHTML = `<p class="reloj">00:${(i>10) ? --i : "0"+--i}</p>`;
+        tiempoJuego = tiempo - i;
+
+        if(i===0 || contador>=2 || banderaJuego){
+            if(contador<2 && !banderaJuego){
+                setTimeout(()=>{
+                    lanzaSwal("Perdiste!!","Mejor suerte la proxima", "error");
+                },600);
+            }
+            contador=1;
+            clearInterval(cuentaRegresiva);
+        }
+    }, 1000);
+}
+
 for(let i=0; i<totalCartas; i++){
     let div = document.createElement('div');
     div.innerHTML = templateCarta;
@@ -83,5 +112,12 @@ for(let i=0; i<totalCartas; i++){
     // cartas[i].querySelectorAll('.frente')[0].innerHTML = valoresUsados[i];
     cartas[i].querySelectorAll('.frente')[0].innerHTML = getValorFrente(valoresUsados[i]);
     cartas[i].querySelectorAll('.carta')[0].addEventListener('click', activar);
-
 }
+
+btnNuevo.addEventListener('click', ()=>{
+    contador++;
+    intentos = 0;
+    paresEncontrados = 0;
+    document.querySelector('.intentos').innerHTML = intentos + ' intentos';
+    reloj();
+})
