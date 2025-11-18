@@ -42,6 +42,10 @@ body{
     transform: rotateY(180deg);
 }
 
+.carta.no-interactiva{
+    pointer-events: none;
+}
+
 .carta div{
     width: 100%;
     height: 100%;

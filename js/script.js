@@ -84,7 +84,7 @@ function lanzaSwal(titulo, texto, icono){
     });
 }
 
-function reloj( tiempo=60 ){
+function reloj( tiempo=30 ){
     let i = tiempo;
     let cuentaRegresiva =  setInterval(() => {
         regresiva.innerHTML = `<p class="reloj">00:${(i>10) ? --i : "0"+--i}</p>`;
@@ -96,28 +96,41 @@ function reloj( tiempo=60 ){
                     lanzaSwal("Perdiste!!","Mejor suerte la proxima", "error");
                 },600);
             }
+            document.querySelectorAll('.carta').forEach(carta =>{
+                carta.classList.add('no-interactiva');
+            })
             contador=1;
             clearInterval(cuentaRegresiva);
         }
     }, 1000);
 }
 
-for(let i=0; i<totalCartas; i++){
-    let div = document.createElement('div');
-    div.innerHTML = templateCarta;
-    cartas.push(div);
-    document.querySelector('#juego').append(cartas[i]);
-
-    valorAleatorio();
-    // cartas[i].querySelectorAll('.frente')[0].innerHTML = valoresUsados[i];
-    cartas[i].querySelectorAll('.frente')[0].innerHTML = getValorFrente(valoresUsados[i]);
-    cartas[i].querySelectorAll('.carta')[0].addEventListener('click', activar);
+const juegoNuevo = ()=>{
+    document.querySelector('.intentos').innerHTML = intentos + ' intentos';
+    document.querySelector('#juego').innerHTML = '';
+    for(let i=0; i<totalCartas; i++){
+        let div = document.createElement('div');
+        div.innerHTML = templateCarta;
+        cartas.push(div);
+        document.querySelector('#juego').append(cartas[i]);
+    
+        valorAleatorio();
+        // cartas[i].querySelectorAll('.frente')[0].innerHTML = valoresUsados[i];
+        cartas[i].querySelectorAll('.frente')[0].innerHTML = getValorFrente(valoresUsados[i]);
+        cartas[i].querySelectorAll('.carta')[0].addEventListener('click', activar);
+    }
 }
 
 btnNuevo.addEventListener('click', ()=>{
     contador++;
     intentos = 0;
     paresEncontrados = 0;
-    document.querySelector('.intentos').innerHTML = intentos + ' intentos';
+    banderaJuego = false;
+    cartas = [];
+    valoresUsados = [];
+    juegoNuevo();
+    
     reloj();
 })
+
+document.addEventListener('DOMContentLoaded', juegoNuevo);
